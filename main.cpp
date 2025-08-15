@@ -17,6 +17,27 @@ int main() {
         }
 
         window.clear(sf::Color(30, 30, 30));
+        
+        for (int x = 0, x < screenWidth; ++x) {
+            double cameraX = 2.0 * x / double(screenWidth) - 1.0;
+            sf::Vector2<double> rayDir(
+                playerDir.x + playerPlane.x * cameraX,
+                playerDir.y + playerPlane.y * cameraX
+            );
 
+            sf::Vector2<int> mapPos(int(playerPos.x), int(playerPos.y));
+
+            sf::Vector2<double> sideDist;
+
+
+            double bignum = 1e30;
+
+            sf::Vector2<double> deltaDist(
+                    (rayDir.x == 0.0) ? bignum : std::abs(1.0 / rayDir.x),
+                    (rayDir.y == 0.0) ? bignum : std::abs(1.0 / rayDir.y),
+                    );
+            double perpWallDist = 0.0;
+
+                
 
 }
