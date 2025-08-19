@@ -2,15 +2,17 @@
 #include <cmath>
 #include <SFML/Graphics.hpp>
 #include "constants.h"
-
+#include <SFML/System/Clock.hpp>
 int main() { 
     sf::RenderWindow window(sf::VideoMode(screenWidth,screenHeight), "SFML Raycaster");
 
     sf::Vector2<double> playerPos(5.0, 5.0);
     sf::Vector2<double> playerDir(1.0, 0.0);
     sf::Vector2<double> playerPlane(0.0, 0.9); 
-    
-    while(window.isOpen()) {
+    double time = 0; //time of current frame
+    double oldTime = 0;
+    sf::Clock clock; 
+        while(window.isOpen()) {
 
         sf::Event event{};
         while(window.pollEvent(event)) {
@@ -19,6 +21,52 @@ int main() {
 
         window.clear(sf::Color(30, 30, 30));
         
+        //handleInput();
+        sf::Time elapsed = clock.getElapsedTime();
+        double milliseconds = elapsed.asMilliseconds();
+        oldTime = time;
+        time = milliseconds;
+        double frameTime = (time - oldTime) / 1000.0; 
+        
+        double moveSpeed = frameTime * 5.0; 
+        double rotSpeed = frameTime * 3.0;
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+            if (worldMap[int(playerPos.x + playerDir.x * moveSpeed)][int(playerPos.y)] == 0)
+                playerPos.x += playerDir.x * moveSpeed;
+            if (worldMap[int(playerPos.x)][int(playerPos.y + playerDir.y * moveSpeed)] == 0)
+                playerPos.y += playerDir.y * moveSpeed;
+        }
+    
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+            if (worldMap[int(playerPos.x - playerDir.x * moveSpeed)][int(playerPos.y)] == 0)
+                playerPos.x -= playerDir.x * moveSpeed;
+            if (worldMap[int(playerPos.x)][int(playerPos.y - playerDir.y * moveSpeed)] == 0)
+                playerPos.y -= playerDir.y * moveSpeed;
+        }
+    
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            double oldDirX = playerDir.x;
+            playerDir.x = playerDir.x * cos(-rotSpeed) - playerDir.y * sin(-rotSpeed);
+            playerDir.y = oldDirX * sin(-rotSpeed) + playerDir.y * cos(-rotSpeed);
+    
+            double oldPlaneX = playerPlane.x;
+            playerPlane.x = playerPlane.x * cos(-rotSpeed) - playerPlane.y * sin(-rotSpeed);
+            playerPlane.y = oldPlaneX * sin(-rotSpeed) + playerPlane.y * cos(-rotSpeed);
+        }
+    
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+            double oldDirX = playerDir.x;
+            playerDir.x = playerDir.x * cos(rotSpeed) - playerDir.y * sin(rotSpeed);
+            playerDir.y = oldDirX * sin(rotSpeed) + playerDir.y * cos(rotSpeed);
+    
+            double oldPlaneX = playerPlane.x;
+            playerPlane.x = playerPlane.x * cos(rotSpeed) - playerPlane.y * sin(rotSpeed);
+            playerPlane.y = oldPlaneX * sin(rotSpeed) + playerPlane.y * cos(rotSpeed);
+        }
+        
+
+
         for (int x = 0; x < screenWidth; ++x) {
             double cameraX = 2.0 * x / double(screenWidth) - 1.0;
             sf::Vector2<double> rayDir(
