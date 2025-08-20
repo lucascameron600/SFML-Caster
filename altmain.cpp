@@ -49,7 +49,9 @@ int worldMap[mapWidth][mapHeight]=
         double rotSpeed = frameTime * 3.0;
 
         movement(worldMap, playerPos, playerDir, playerPlane, moveSpeed, rotSpeed);
+        castFloornCeiling(window, worldMap, playerPos, playerDir, playerPlane);
         castRays(window, worldMap, playerPos, playerDir, playerPlane);
+        
 
         window.display();
     }

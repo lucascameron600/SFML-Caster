@@ -59,12 +59,54 @@ if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
     playerPlane.y = oldPlaneX * sin(rotSpeed) + playerPlane.y * cos(rotSpeed);
 }
 }
+void castFloornCeiling(sf::RenderWindow& window,
+        const int worldMap[24][24],
+        sf::Vector2<double>& playerPos,
+        sf::Vector2<double>& playerDir,
+        sf::Vector2<double>& playerPlane) {
+        
+        
+    sf::VertexArray floorCeiling(sf::Points);
+
+    for(int y = 0; y<screenHeight; y++){
+
+        sf::Vector2<float> rayDir0(playerDir.x - playerPlane.x , playerDir.y - playerPlane.y);
+        sf::Vector2<float> rayDir1(playerDir.x + playerPlane.x , playerDir.y + playerPlane.y);
+
+        int p = y-screenHeight /2;
+        if (p == 0) continue;
+        
+        float zPos = 0.5 * screenHeight;
+        float rowDistance = zPos / p;
+
+        sf::Vector2<double> floorStep(rowDistance * (rayDir1.x - rayDir0.x) / screenWidth,rowDistance * (rayDir1.y - rayDir0.y) / screenWidth);
+        sf::Vector2<double> floorCords(playerPos.x+ rowDistance * rayDir0.x ,playerPos.y+rowDistance*rayDir0.y);
+        
+        for(int x = 0; x<screenWidth; x++){
+            //sf::Vector2<int> cellCord((int)(floorCords.x),(int)(floorCords.y))        
+            
+            
+            floorCeiling.append(sf::Vertex(sf::Vector2f(x, y), sf::Color::Red));
+
+            // Draw ceiling pixel (symmetrical)
+            floorCeiling.append(sf::Vertex(sf::Vector2f(x, screenHeight - y - 1),sf::Color::Red));
+
+            // Advance floor world position
+            floorCords.x += floorStep.x;
+            floorCords.y += floorStep.y;
+        }
+    
+    }
+    window.draw(floorCeiling);
+
+    }
 
 void castRays(sf::RenderWindow& window,
-                       const int worldMap[24][24],
-                       sf::Vector2<double>& playerPos,
-                       sf::Vector2<double>& playerDir,
-                       sf::Vector2<double>& playerPlane) {
+        const int worldMap[24][24],
+        sf::Vector2<double>& playerPos,
+        sf::Vector2<double>& playerDir,
+        sf::Vector2<double>& playerPlane) {
+
     for (int x = 0; x < screenWidth; ++x) {
             double cameraX = 2.0 * x / double(screenWidth) - 1.0;
             sf::Vector2<double> rayDir(

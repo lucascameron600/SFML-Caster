@@ -21,4 +21,10 @@ void castRays(sf::RenderWindow& window,
                        sf::Vector2<double>& playerDir,
                        sf::Vector2<double>& playerPlane);
 
+void castFloornCeiling(sf::RenderWindow& window,
+    const int worldMap[24][24],
+    sf::Vector2<double>& playerPos,
+    sf::Vector2<double>& playerDir,
+    sf::Vector2<double>& playerPlane);
+
 #endif 
