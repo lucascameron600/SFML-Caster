@@ -7,6 +7,10 @@
 void handleEvents(sf::RenderWindow& window);
 
 double calcFrameTime(sf::Clock& clock, double& oldTime);
+void handleMouseMovement(sf::RenderWindow& window,
+    sf::Vector2<double>& playerDir,
+    sf::Vector2<double>& playerPlane,
+    double mouseSensitivity, sf::Vector2<int> delta);
 
 void movement(const int worldMap[24][24],
                      sf::Vector2<double>& playerPos,

@@ -16,8 +16,27 @@ double calcFrameTime(sf::Clock& clock, double& oldTime) {
     double now = elapsed.asMilliseconds();
     double frameTime = (now - oldTime) / 1000.0;
     oldTime = now;
+    
     return frameTime;
 }
+void handleMouseMovement(sf::RenderWindow& window,
+    sf::Vector2<double>& playerDir,
+    sf::Vector2<double>& playerPlane,
+    double mouseSensitivity,sf::Vector2<int> delta){
+
+        double msens = mouseSensitivity; 
+        double rotationAmount = -delta.x * msens;
+        
+        double oldDirX = playerDir.x;
+        playerDir.x = playerDir.x * cos(rotationAmount) - playerDir.y * sin(rotationAmount);
+        playerDir.y = oldDirX * sin(rotationAmount) + playerDir.y * cos(rotationAmount);
+        
+        double oldPlaneX = playerPlane.x;
+        playerPlane.x = playerPlane.x * cos(rotationAmount) - playerPlane.y * sin(rotationAmount);
+        playerPlane.y = oldPlaneX * sin(rotationAmount) + playerPlane.y * cos(rotationAmount);
+
+    }
+
 void movement(const int worldMap[24][24],
     sf::Vector2<double>& playerPos,
     sf::Vector2<double>& playerDir,
@@ -33,73 +52,75 @@ if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 }
 
 if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-    if (worldMap[int(playerPos.x - playerDir.x * moveSpeed)][int(playerPos.y)] == 0)
+
+if (worldMap[int(playerPos.x - playerDir.x * moveSpeed)][int(playerPos.y)] == 0)
   playerPos.x -= playerDir.x * moveSpeed;
     if (worldMap[int(playerPos.x)][int(playerPos.y - playerDir.y * moveSpeed)] == 0)
   playerPos.y -= playerDir.y * moveSpeed;
 }
 
-if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-    double oldDirX = playerDir.x;
-    playerDir.x = playerDir.x * cos(-rotSpeed) - playerDir.y * sin(-rotSpeed);
-    playerDir.y = oldDirX * sin(-rotSpeed) + playerDir.y * cos(-rotSpeed);
-
-    double oldPlaneX = playerPlane.x;
-    playerPlane.x = playerPlane.x * cos(-rotSpeed) - playerPlane.y * sin(-rotSpeed);
-    playerPlane.y = oldPlaneX * sin(-rotSpeed) + playerPlane.y * cos(-rotSpeed);
+//if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+//    double oldDirX = playerDir.x;
+//    playerDir.x = playerDir.x * cos(-rotSpeed) - playerDir.y * sin(-rotSpeed);
+//    playerDir.y = oldDirX * sin(-rotSpeed) + playerDir.y * cos(-rotSpeed);
+//
+//    double oldPlaneX = playerPlane.x;
+//    playerPlane.x = playerPlane.x * cos(-rotSpeed) - playerPlane.y * sin(-rotSpeed);
+//    playerPlane.y = oldPlaneX * sin(-rotSpeed) + playerPlane.y * cos(-rotSpeed);
+//}
+//
+//if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+//    double oldDirX = playerDir.x;
+//    playerDir.x = playerDir.x * cos(rotSpeed) - playerDir.y * sin(rotSpeed);
+//    playerDir.y = oldDirX * sin(rotSpeed) + playerDir.y * cos(rotSpeed);
+//
+//    double oldPlaneX = playerPlane.x;
+//    playerPlane.x = playerPlane.x * cos(rotSpeed) - playerPlane.y * sin(rotSpeed);
+//    playerPlane.y = oldPlaneX * sin(rotSpeed) + playerPlane.y * cos(rotSpeed);
+//}
 }
-
-if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-    double oldDirX = playerDir.x;
-    playerDir.x = playerDir.x * cos(rotSpeed) - playerDir.y * sin(rotSpeed);
-    playerDir.y = oldDirX * sin(rotSpeed) + playerDir.y * cos(rotSpeed);
-
-    double oldPlaneX = playerPlane.x;
-    playerPlane.x = playerPlane.x * cos(rotSpeed) - playerPlane.y * sin(rotSpeed);
-    playerPlane.y = oldPlaneX * sin(rotSpeed) + playerPlane.y * cos(rotSpeed);
-}
-}
-void castFloornCeiling(sf::RenderWindow& window,
-        const int worldMap[24][24],
-        sf::Vector2<double>& playerPos,
-        sf::Vector2<double>& playerDir,
-        sf::Vector2<double>& playerPlane) {
-        
-        
-    sf::VertexArray floorCeiling(sf::Points);
-
-    for(int y = 0; y<screenHeight; y++){
-
-        sf::Vector2<float> rayDir0(playerDir.x - playerPlane.x , playerDir.y - playerPlane.y);
-        sf::Vector2<float> rayDir1(playerDir.x + playerPlane.x , playerDir.y + playerPlane.y);
-
-        int p = y-screenHeight /2;
-        if (p == 0) continue;
-        
-        float zPos = 0.5 * screenHeight;
-        float rowDistance = zPos / p;
-
-        sf::Vector2<double> floorStep(rowDistance * (rayDir1.x - rayDir0.x) / screenWidth,rowDistance * (rayDir1.y - rayDir0.y) / screenWidth);
-        sf::Vector2<double> floorCords(playerPos.x+ rowDistance * rayDir0.x ,playerPos.y+rowDistance*rayDir0.y);
-        
-        for(int x = 0; x<screenWidth; x++){
-            //sf::Vector2<int> cellCord((int)(floorCords.x),(int)(floorCords.y))        
-            
-            
-            floorCeiling.append(sf::Vertex(sf::Vector2f(x, y), sf::Color::Red));
-
-            // Draw ceiling pixel (symmetrical)
-            floorCeiling.append(sf::Vertex(sf::Vector2f(x, screenHeight - y - 1),sf::Color::Red));
-
-            // Advance floor world position
-            floorCords.x += floorStep.x;
-            floorCords.y += floorStep.y;
-        }
-    
-    }
-    window.draw(floorCeiling);
-
-    }
+////void castFloornCeiling(sf::RenderWindow& window,
+//        const int worldMap[24][24],
+//        sf::Vector2<double>& playerPos,
+//        sf::Vector2<double>& playerDir,
+//        sf::Vector2<double>& playerPlane) {
+//        
+//        
+//    sf::VertexArray floorCeiling(sf::Points);
+//
+//    for(int y = 0; y<screenHeight; y++){
+//
+//        sf::Vector2<float> rayDir0(playerDir.x - playerPlane.x , playerDir.y - playerPlane.y);
+//        sf::Vector2<float> rayDir1(playerDir.x + playerPlane.x , playerDir.y + playerPlane.y);
+//
+//        int p = y-screenHeight /2;
+//        if (p == 0) continue;
+//
+//        float zPos = 0.5 * screenHeight;
+//        float rowDistance = zPos / p;
+//
+//        sf::Vector2<double> floorStep(rowDistance * (rayDir1.x - rayDir0.x) / screenWidth,rowDistance * (rayDir1.y - rayDir0.y) / screenWidth);
+//        sf::Vector2<double> floorCords(playerPos.x+ rowDistance * rayDir0.x ,playerPos.y+rowDistance*rayDir0.y);
+//        
+//        for(int x = 0; x<screenWidth; x++){
+//            //sf::Vector2<int> cellCord((int)(floorCords.x),(int)(floorCords.y))        
+//            
+//            
+//            floorCeiling.append(sf::Vertex(sf::Vector2f(x, y), sf::Color::Red));
+//
+//            // Draw ceiling pixel (symmetrical)
+//            floorCeiling.append(sf::Vertex(sf::Vector2f(x, screenHeight - y - 1),sf::Color::Red));
+//
+//            // Advance floor world position
+//            floorCords.x += floorStep.x;
+//            floorCords.y += floorStep.y;
+//            
+//        }
+//    
+//    }
+//    window.draw(floorCeiling);
+//
+//    }
 
 void castRays(sf::RenderWindow& window,
         const int worldMap[24][24],
